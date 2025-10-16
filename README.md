@@ -1,3 +1,53 @@
+# Cómo ejecutar el código del broker TCP
+
+## Compilación
+Primero, compila cada archivo usando un compilador de C compatible con Windows:
+
+```bash
+gcc broker.c -o broker.exe -lws2_32
+gcc publicador.c -o publicador.exe -lws2_32
+gcc suscriptor.c -o suscriptor.exe -lws2_32
+```
+
+## Ejecución
+
+### 1. Iniciar el Broker
+Abre una terminal, ubícate en el directorio donde esté el ejecutable broker.exe y ejecuta:
+```bash
+broker.exe <puerto>
+```
+Ejemplo:
+```bash
+broker.exe 5555
+```
+
+### 2. Iniciar un Suscriptor
+Abre otra terminal nueva, ubícate en el directorio donde esté el ejecutable suscriptor.exe y ejecuta:
+```bash
+suscriptor.exe <ip_broker> <puerto_broker> <tema>
+```
+Ejemplo:
+```bash
+suscriptor.exe 127.0.0.1 5555 partido1
+```
+
+### 3. Iniciar un Publicador
+Abre otra terminal nueva, ubícate en el directorio donde esté el ejecutable publicador.exe y ejecuta:
+```bash
+publicador.exe <ip_broker> <puerto_broker> <tema>
+```
+Ejemplo:
+```bash
+publicador.exe 127.0.0.1 5555 partido1
+```
+
+### Orden de ejecución
+1. Primero ejecuta el broker
+2. Después ejecuta los suscriptores
+3. Finalmente ejecuta los publicadores
+4. Escribe mensajes en la terminal del publicador para que aparezcan en los suscriptores
+
+
 # Como ejecutar el código del broker UDP
 
 ## Compilación
