@@ -48,7 +48,7 @@ publicador.exe 127.0.0.1 5555 partido1
 4. Escribe mensajes en la terminal del publicador para que aparezcan en los suscriptores
 
 
-# Como ejecutar el código del broker UDP
+# Cómo ejecutar el código del broker UDP
 
 ## Compilación
 Primero, compila cada archivo usando un compilador de C compatible con Windows:
@@ -142,3 +142,23 @@ Librería específica de Windows para programación de redes y sockets. Permite 
 - `ntohs()`: Convierte números del formato de red al formato local
 - `inet_addr()`: Convierte direcciones IP de texto a formato binario
 - `inet_ntoa()`: Convierte direcciones IP de formato binario a texto
+
+## windows.h
+Librería principal del sistema operativo Windows, que proporciona acceso directo a la API de Windows (Windows API). Permite controlar aspectos del sistema como procesos, hilos, sincronización, memoria, manejo de archivos y otros recursos del sistema operativo.
+
+**Funciones y estructuras utilizadas:**
+- `CreateThread()`: Crea un nuevo hilo (thread) dentro del proceso actual. En el programa TCP, se usa en el broker para atender múltiples clientes de forma concurrente, de modo que cada conexión (suscriptor o publicador) es gestionada en un hilo independiente.
+
+- `DWORD WINAPI`: Especifica el tipo de función que se utiliza como punto de entrada de un hilo. Indica que la función devuelve un valor DWORD (entero sin signo de 32 bits) y utiliza el convenio de llamada WINAPI necesario para que el sistema operativo Windows pueda ejecutarla correctamente como hilo.
+
+- `LPVOID`: Es un puntero genérico a cualquier tipo de dato (void* en C estándar). Se usa como parámetro en funciones de hilos para pasar información al hilo recién creado, como por ejemplo el descriptor del socket asociado al cliente.
+
+- `CRITICAL_SECTION`: Estructura utilizada para implementar secciones críticas, que son mecanismos de sincronización de hilos. Permite asegurar que solo un hilo acceda a una parte del código o recurso compartido a la vez, evitando condiciones de carrera (race conditions). En el programa, se usa para proteger el acceso a la lista global de suscriptores (subscribers).
+
+- `InitializeCriticalSection()`: Inicializa una estructura CRITICAL_SECTION antes de usarla. Se llama una vez al inicio del programa (en el main) para preparar el mecanismo de bloqueo.
+
+- `EnterCriticalSection()`:Permite que un hilo entre a una sección crítica. Si otro hilo ya está dentro, el hilo actual espera hasta que el recurso esté disponible. En el broker, se usa para proteger el acceso a la lista de suscriptores durante operaciones de alta (add_subscriber()) o envío de mensajes (publish_message()).
+
+- `LeaveCriticalSection()`: Libera la sección crítica, permitiendo que otros hilos puedan entrar. Se usa inmediatamente después de completar una operación sobre la lista compartida.
+
+- `DeleteCriticalSection()`: Libera los recursos asociados con una sección crítica una vez que ya no se necesita, generalmente antes de finalizar el programa.
